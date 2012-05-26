@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Phone.Tasks;
 
 namespace WallpaperTest
 {
@@ -58,8 +59,16 @@ namespace WallpaperTest
             InitializeComponent();
             button1.Click += new RoutedEventHandler(button1_Click);
             button2.Click += new RoutedEventHandler(button2_Click);
+            PageTitle.Tap += new EventHandler<GestureEventArgs>(PageTitle_Tap);
 
             loadUrl(feedUrl);
+        }
+
+        void PageTitle_Tap(object sender, GestureEventArgs e)
+        {
+            WebBrowserTask task = new WebBrowserTask();
+            task.Uri = new Uri(entries[curEntry].Link);
+            task.Show();
         }
 
         void button2_Click(object sender, RoutedEventArgs e)
