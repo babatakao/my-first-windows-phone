@@ -52,7 +52,8 @@ namespace WallpaperTest
     }
     public partial class MainPage : PhoneApplicationPage
     {
-        private const string feedUrl = "http://ameshossu.blog58.fc2.com/?xml";
+        //private const string feedUrl = "http://ameshossu.blog58.fc2.com/?xml";
+        private const string feedUrl = "http://hatchannikki.blog107.fc2.com/?xml";
         BlogEntry[] entries;
         int curEntry, curImage;
 
@@ -158,17 +159,19 @@ namespace WallpaperTest
         void client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs ev)
         {
             var doc = XDocument.Parse(ev.Result);
-            var q = from e in doc.Root.Elements()
+            var q = from entry in
+                    from e in doc.Root.Elements()
                     where e.Name.ToString().EndsWith("item")
                     select new BlogEntry()
                     {
                         Title = e.Element("{http://purl.org/rss/1.0/}title").Value,
                         Link = e.Element("{http://purl.org/rss/1.0/}link").Value,
                         Content = e.Element("{http://purl.org/rss/1.0/modules/content/}encoded").Value,
-                    };
+                    }
+                where entry.ImageUrls.Count() > 0
+                select entry;
             entries = q.ToArray();
             startShow();
         }
-
     }
 }
