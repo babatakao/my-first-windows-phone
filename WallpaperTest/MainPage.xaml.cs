@@ -15,6 +15,8 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Phone.Tasks;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace WallpaperTest
 {
@@ -62,6 +64,16 @@ namespace WallpaperTest
             PageTitle.Tap += new EventHandler<GestureEventArgs>(PageTitle_Tap);
 
             loadUrl(feedUrl);
+            var timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
+            timer_Tick(null, null);
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            PageTitle.Text = DateTime.Now.ToString("HH:mm:ss");
         }
 
         void PageTitle_Tap(object sender, GestureEventArgs e)
@@ -117,7 +129,7 @@ namespace WallpaperTest
 
         void showImage()
         {
-            PageTitle.Text = entries[curEntry].Title;
+            ApplicationTitle.Text = entries[curEntry].Title;
             image1.Source = new BitmapImage(new Uri(entries[curEntry].ImageUrls[curImage]));
         }
 
