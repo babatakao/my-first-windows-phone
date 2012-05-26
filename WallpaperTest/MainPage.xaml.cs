@@ -18,6 +18,7 @@ using Microsoft.Phone.Tasks;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace WallpaperTest
 {
@@ -72,6 +73,28 @@ namespace WallpaperTest
             timer.Tick += new EventHandler(timer_Tick);
             timer.Start();
             timer_Tick(null, null);
+
+            TouchPanel.EnabledGestures = GestureType.Flick;
+            image1.ManipulationCompleted += new EventHandler<ManipulationCompletedEventArgs>(image1_ManipulationCompleted);
+        }
+
+        void image1_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+        {
+            if (TouchPanel.IsGestureAvailable)
+            {
+                var ges = TouchPanel.ReadGesture();
+                if (ges.GestureType == GestureType.Flick)
+                {
+                    if (ges.Delta.X < 0)
+                    {
+                        next();
+                    }
+                    else
+                    {
+                        prev();
+                    }
+                }
+            }
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -101,7 +124,10 @@ namespace WallpaperTest
 
         void button2_Click(object sender, RoutedEventArgs e)
         {
-            //next
+        }
+
+        void next()
+        {
             if (curImage == entries[curEntry].ImageUrls.Length - 1)
             {
                 if (curEntry == entries.Length - 1)
@@ -120,7 +146,10 @@ namespace WallpaperTest
 
         void button1_Click(object sender, RoutedEventArgs e)
         {
-            //prev
+            prev();
+        }
+        void prev()
+        {
             if (curImage == 0)
             {
                 if (curEntry == 0)
