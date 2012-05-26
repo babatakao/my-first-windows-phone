@@ -53,10 +53,12 @@ namespace WallpaperTest
     }
     public partial class MainPage : PhoneApplicationPage
     {
-        //private const string feedUrl = "http://ameshossu.blog58.fc2.com/?xml";
-        private const string feedUrl = "http://hatchannikki.blog107.fc2.com/?xml";
+        private string[] feedUrls = new string[] {
+            "http://ameshossu.blog58.fc2.com/?xml",
+            "http://hatchannikki.blog107.fc2.com/?xml"
+        };
         BlogEntry[] entries;
-        int curEntry, curImage;
+        int curBlog, curEntry, curImage;
 
         // Constructor
         public MainPage()
@@ -64,10 +66,11 @@ namespace WallpaperTest
             InitializeComponent();
             button1.Click += new RoutedEventHandler(button1_Click);
             button2.Click += new RoutedEventHandler(button2_Click);
+            button3.Click += new RoutedEventHandler(button3_Click);
             PageTitle.Tap += new EventHandler<GestureEventArgs>(PageTitle_Tap);
             image1.Tap += delegate(object sender, GestureEventArgs e) { saveImage(); };
 
-            loadUrl(feedUrl);
+            loadUrl();
             var timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += new EventHandler(timer_Tick);
@@ -76,6 +79,15 @@ namespace WallpaperTest
 
             TouchPanel.EnabledGestures = GestureType.Flick;
             image1.ManipulationCompleted += new EventHandler<ManipulationCompletedEventArgs>(image1_ManipulationCompleted);
+        }
+
+        void button3_Click(object sender, RoutedEventArgs e)
+        {
+            if (++curBlog >= feedUrls.Length)
+            {
+                curBlog = 0;
+            }
+            loadUrl();
         }
 
         void image1_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
@@ -124,6 +136,7 @@ namespace WallpaperTest
 
         void button2_Click(object sender, RoutedEventArgs e)
         {
+            next();
         }
 
         void next()
@@ -178,11 +191,11 @@ namespace WallpaperTest
             image1.Source = new BitmapImage(new Uri(entries[curEntry].ImageUrls[curImage]));
         }
 
-        private void loadUrl(string url)
+        private void loadUrl()
         {
             var client = new WebClient();
             client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(client_DownloadStringCompleted);
-            client.DownloadStringAsync(new Uri(url));
+            client.DownloadStringAsync(new Uri(feedUrls[curBlog]));
         }
 
         void client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs ev)
