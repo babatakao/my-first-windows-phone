@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Phone.Tasks;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Xna.Framework.Media;
 
 namespace WallpaperTest
 {
@@ -62,6 +63,7 @@ namespace WallpaperTest
             button1.Click += new RoutedEventHandler(button1_Click);
             button2.Click += new RoutedEventHandler(button2_Click);
             PageTitle.Tap += new EventHandler<GestureEventArgs>(PageTitle_Tap);
+            image1.Tap += delegate(object sender, GestureEventArgs e) { saveImage(); };
 
             loadUrl(feedUrl);
             var timer = new DispatcherTimer();
@@ -74,6 +76,19 @@ namespace WallpaperTest
         void timer_Tick(object sender, EventArgs e)
         {
             PageTitle.Text = DateTime.Now.ToString("HH:mm:ss");
+        }
+
+        void saveImage()
+        {
+            var library = new MediaLibrary();
+            var name = entries[curEntry].Title + "-" + DateTime.Now.ToString();
+            var url = entries[curEntry].ImageUrls[curImage];
+            var client = new WebClient();
+            client.OpenReadCompleted += delegate(object sender, OpenReadCompletedEventArgs e) {
+                library.SavePicture(name, e.Result);
+                MessageBox.Show("saved: " + name);
+            };
+            client.OpenReadAsync(new Uri(url));
         }
 
         void PageTitle_Tap(object sender, GestureEventArgs e)
